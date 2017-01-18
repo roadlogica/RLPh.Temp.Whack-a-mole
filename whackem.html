@@ -1,0 +1,175 @@
+<!doctype html> 
+<html lang="en"> 
+<head> 
+	<meta charset="UTF-8" />
+    <title>Whackem</title>
+	<script type="text/javascript" src="js/phaser.min.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<script type="text/javascript">
+var game = new Phaser.Game(800, 600, Phaser.AUTO, 'test', null, false, false);
+
+var BasicGame = function (game) {};
+
+BasicGame.Boot = function (game) {};
+
+var timer, timerEvent, text;
+var timeText;
+var hole1;
+var hole2;
+var hole3;
+var hole4;
+var hole5;
+var hole6;
+var char1;
+var char2;
+var char3;
+var char4;
+var char5;
+var char6;
+
+BasicGame.Boot.prototype = {
+    preload: function () {
+        game.load.image('background', 'assets/bg.png');
+		game.load.image('char', 'assets/char.png');
+		game.load.image('hammer', 'assets/hammer.png');
+		game.load.image('hole', 'assets/hole.png');
+		game.load.image('curtain', 'assets/curtain.png');
+    },
+    create: function () {
+		game.physics.startSystem(Phaser.Physics.ARCADE);
+	
+	    //  A simple background for our game
+		game.add.sprite(0, 0, 'background');
+        
+		upperholes = game.add.group();
+		upperholes.enableBody = true;
+
+		// Holes 1-3
+		hole1 = upperholes.create(100, 270, 'hole');
+		hole1.body.immovable = true;
+		
+		hole2 = upperholes.create(300, 270, 'hole');
+		hole2.body.immovable = true;
+				
+		hole3 = upperholes.create(500, 270, 'hole');
+		hole3.body.immovable = true;
+
+		lowerholes = game.add.group();
+		lowerholes.enableBody = true;
+		
+		hole4 = lowerholes.create(100, 485, 'hole');
+		hole4.body.immovable = true;
+		
+		hole5 = lowerholes.create(300, 485, 'hole');
+		hole5.body.immovable = true;
+		
+		hole6 = lowerholes.create(500, 485, 'hole');
+		hole6.body.immovable = true;		
+		
+		//Characters
+		upperchars = game.add.group();
+		upperchars.enableBody = true;
+		
+		char1 = upperchars.create(100, 290, 'char');
+		char1.body.immovable = true;
+		
+		char2 = upperchars.create(300, 290, 'char');
+		char2.body.immovable = true;
+		
+		char3 = upperchars.create(500, 290, 'char');
+		char3.body.immovable = true;
+		
+		//'Curtains' that hide the characters
+		uppercurtains = game.add.group();
+		uppercurtains.enableBody = true;
+		
+		curtain1 = uppercurtains.create(100, 290, 'curtain');
+		curtain1.body.immovable = true;
+		
+		curtain2 = uppercurtains.create(300, 290, 'curtain');
+		curtain2.body.immovable = true;
+				
+		curtain3 = uppercurtains.create(500, 290, 'curtain');
+		curtain3.body.immovable = true;
+		
+		lowerchars = game.add.group();
+		lowerchars.enableBody = true;
+		
+		char4 = lowerchars.create(100, 505, 'char');
+		char4.body.immovable = true;
+		
+		char5 = lowerchars.create(300, 505, 'char');
+		char5.body.immovable = true;
+		
+		char6 = lowerchars.create(500, 505, 'char');
+		char6.body.immovable = true;
+		
+		
+		lowercurtains = game.add.group();
+		lowercurtains.enableBody = true;
+		
+		curtain4 = lowercurtains.create(100, 505, 'curtain');
+		curtain4.body.immovable = true;
+		
+		curtain5 = lowercurtains.create(300, 505, 'curtain');
+		curtain5.body.immovable = true;
+		
+		curtain6 = lowercurtains.create(500, 505, 'curtain');
+		curtain6.body.immovable = true;		
+		
+		//  The score
+		timeText = game.add.text(16, 16, '0', { fontSize: '32px', fill: '#000' });
+		
+
+		game.time.events.repeat(Phaser.Timer.SECOND * 2, 15, this.peekChar(), this);
+    },
+    update: function () {
+        
+    },
+    render: function () {	
+			//timeText.text = this.formatTime(game.time.events.duration.toFixed(0), 32, 32);
+    },
+    formatTime: function(s) {
+        // Convert seconds (s) to a nicely formatted and padded time string
+        var minutes = "0" + Math.floor(s / 60);
+        var seconds = "0" + (s - minutes * 60);
+        return minutes.substr(-2) + ":" + seconds.substr(-2);   
+    },
+	peekChar: function() {
+		var rand = Math.floor(Math.random() * 6) + 1;
+		var charx;
+		if(rand ==1){
+			charx = char1;
+		}else if(rand ==2){
+			charx = char2;
+		}else if(rand ==3){
+			charx = char3;
+		}else if(rand ==4){
+			charx = char4;
+		}else if(rand ==5){
+			charx = char5;
+		}else if(rand ==6){
+			charx = char6;
+		}
+		game.time.events.pause();
+		var initPosition = charx.position;
+		timeText.text = initPosition;
+		charx.body.velocity.y=-10;
+		game.time.events.resume();
+	}
+};
+
+game.state.add('Boot', BasicGame.Boot);
+game.state.start('Boot');
+
+</script>
+
+</body>
+</html>
