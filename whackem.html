@@ -33,6 +33,9 @@ var char3;
 var char4;
 var char5;
 var char6;
+var riser;
+var riserY;
+var status;
 
 BasicGame.Boot.prototype = {
     preload: function () {
@@ -78,13 +81,13 @@ BasicGame.Boot.prototype = {
 		upperchars.enableBody = true;
 		
 		char1 = upperchars.create(100, 290, 'char');
-		char1.body.immovable = true;
+		char1.body.moves = true;
 		
 		char2 = upperchars.create(300, 290, 'char');
-		char2.body.immovable = true;
+		char2.body.moves = true;
 		
 		char3 = upperchars.create(500, 290, 'char');
-		char3.body.immovable = true;
+		char3.body.moves = true;
 		
 		//'Curtains' that hide the characters
 		uppercurtains = game.add.group();
@@ -103,15 +106,14 @@ BasicGame.Boot.prototype = {
 		lowerchars.enableBody = true;
 		
 		char4 = lowerchars.create(100, 505, 'char');
-		char4.body.immovable = true;
+		char4.body.moves = true;
 		
 		char5 = lowerchars.create(300, 505, 'char');
-		char5.body.immovable = true;
+		char5.body.moves = true;
 		
 		char6 = lowerchars.create(500, 505, 'char');
-		char6.body.immovable = true;
-		
-		
+		char6.body.moves = true;
+			
 		lowercurtains = game.add.group();
 		lowercurtains.enableBody = true;
 		
@@ -127,22 +129,24 @@ BasicGame.Boot.prototype = {
 		//  The score
 		timeText = game.add.text(16, 16, '0', { fontSize: '32px', fill: '#000' });
 		
-
-		game.time.events.repeat(Phaser.Timer.SECOND * 2, 15, this.peekChar(), this);
+		//game.time.events.repeat(Phaser.Timer.SECOND * 2, 15, this.peekChar(), this);
+		riser = this.pickChar();
+		this.peekChar(riser);
     },
     update: function () {
-        
+		if(Math.round(riser.position.y) == Math.round((riserY - 130)) && status == 'rising'){
+			this.hideChar();
+		}
+ 		else if(Math.round(riser.position.y) == Math.round((riserY)) && status == 'hiding'){
+			riser.body.velocity.y = 0;
+			riser = this.pickChar();
+			this.peekChar(riser);
+		}
     },
     render: function () {	
-			//timeText.text = this.formatTime(game.time.events.duration.toFixed(0), 32, 32);
+		//timeText.text = riserY + " --- " + riser.position.y;
     },
-    formatTime: function(s) {
-        // Convert seconds (s) to a nicely formatted and padded time string
-        var minutes = "0" + Math.floor(s / 60);
-        var seconds = "0" + (s - minutes * 60);
-        return minutes.substr(-2) + ":" + seconds.substr(-2);   
-    },
-	peekChar: function() {
+	pickChar: function() {
 		var rand = Math.floor(Math.random() * 6) + 1;
 		var charx;
 		if(rand ==1){
@@ -158,11 +162,16 @@ BasicGame.Boot.prototype = {
 		}else if(rand ==6){
 			charx = char6;
 		}
-		game.time.events.pause();
-		var initPosition = charx.position;
-		timeText.text = initPosition;
-		charx.body.velocity.y=-10;
-		game.time.events.resume();
+		riserY = charx.position.y;
+		return charx;
+	},
+	peekChar: function(){
+		riser.body.velocity.y = -50;
+		status = 'rising';
+	},
+	hideChar: function(){
+		riser.body.velocity.y = 50;
+		status = 'hiding';
 	}
 };
 
