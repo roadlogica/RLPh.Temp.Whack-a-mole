@@ -30,7 +30,8 @@ var char6;
 var riser;
 var riserY;
 var status;
-var hits;
+var hitEffects;
+var hitAreas;
 
 BasicGame.Boot.prototype = {
     preload: function () {
@@ -77,12 +78,18 @@ BasicGame.Boot.prototype = {
 		
 		char1 = upperchars.create(100, 290, 'char');
 		char1.body.moves = true;
+		char1.inputEnabled = true;
+		char1.events.onInputDown.add(this.onClicked, this);
 		
 		char2 = upperchars.create(300, 290, 'char');
 		char2.body.moves = true;
+		char2.inputEnabled = true;
+		char2.events.onInputDown.add(this.onClicked, this);
 		
 		char3 = upperchars.create(500, 290, 'char');
 		char3.body.moves = true;
+		char3.inputEnabled = true;
+		char3.events.onInputDown.add(this.onClicked, this);
 		
 		//'Curtains' that hide the characters
 		uppercurtains = game.add.group();
@@ -102,12 +109,18 @@ BasicGame.Boot.prototype = {
 		
 		char4 = lowerchars.create(100, 505, 'char');
 		char4.body.moves = true;
+		char4.inputEnabled = true;
+		char4.events.onInputDown.add(this.onClicked, this);
 		
 		char5 = lowerchars.create(300, 505, 'char');
 		char5.body.moves = true;
+		char5.inputEnabled = true;
+		char5.events.onInputDown.add(this.onClicked, this);
 		
 		char6 = lowerchars.create(500, 505, 'char');
 		char6.body.moves = true;
+		char6.inputEnabled = true;
+		char6.events.onInputDown.add(this.onClicked, this);
 			
 		lowercurtains = game.add.group();
 		lowercurtains.enableBody = true;
@@ -124,21 +137,33 @@ BasicGame.Boot.prototype = {
 		//  The score
 		timeText = game.add.text(16, 16, '0', { fontSize: '32px', fill: '#000' });
 		
-		hits = game.add.group();
-		hits.enableBody = true;
+		hitAreas = game.add.group();
+		hitAreas.enableBody = true;
 		
-		var hit;
+		hitEffects = game.add.group();
+		hitEffects.enableBody = true;
+		
+		var hitEffect;
 
 		game.input.onTap.add(function(pointer) {
-		  hit = hits.create(pointer.position.x -61, pointer.position.y-61, 'hit');
-		  hit.body.immovable = true;	
+		  hitEffect = hitEffects.create(pointer.position.x - 30.5, pointer.position.y - 30.5, 'hit');
+		  hitEffect.body.immovable = true;		  
+		  hitEffect.scale.setTo(0.5, 0.5);
+		  hitEffect.alpha =  hitEffect.alpha - 0.5;
+		  
+		  hit = hitAreas.create(pointer.position.x - 15.25, pointer.position.y - 15.25, 'hit');
+		  hit.body.immovable = true;		  
+		  hit.scale.setTo(0.25, 0.25);
+		  hit.alpha =  0;
 		});
 		
-		//game.time.events.repeat(Phaser.Timer.SECOND * 2, 15, this.peekChar(), this);
 		riser = this.pickChar();
 		this.peekChar(riser);
     },
     update: function () {
+	    game.physics.arcade.collide(hitAreas, lowerchars, this.onHit);
+		//game.physics.arcade.collide(hitAreas, upperchars, this.onHit);
+		
 		if(Math.round(riser.position.y) <= Math.round((riserY - 130)) && status == 'rising'){
 			this.hideChar();
 		}
@@ -148,15 +173,28 @@ BasicGame.Boot.prototype = {
 			this.peekChar(riser);
 		}
 		
-		hits.forEach(function(item) {	
+		hitEffects.forEach(function(item) {	
 			if(!(typeof item === "undefined")){
-				item.alpha = item.alpha - 0.006;			
-
+				var oldWidth = item.width;
+				 
+				item.alpha = item.alpha - 0.046;			
+				item.scale.setTo(item.scale.x * 1.05, item.scale.y * 1.05);
+				item.position.x = item.position.x - ((item.width - oldWidth)/2);
+				item.position.y = item.position.y - ((item.width - oldWidth)/2);
+				
 				if (item.alpha <= 0)
 				{
-					hits.remove(item);
+					hitEffects.remove(item);
 					item.destroy();
+					
+					hitAreas.forEach(function(item) {	
+						if(!(typeof item === "undefined")){
+							hitAreas.remove(item);
+							item.destroy();
+						}
+					});
 				}
+				
 			}			
 		});
 
@@ -190,6 +228,41 @@ BasicGame.Boot.prototype = {
 	hideChar: function(){
 		riser.body.velocity.y = 50;
 		status = 'hiding';
+	},
+	onHit: function(hit, charx){
+
+	    hitAreas.forEach(function(item) {	
+			if(!(typeof item === "undefined")){
+				hitAreas.remove(item);
+				item.destroy();
+			}
+		});		
+		
+		status = 'hiding';
+		charx.body.velocity.y = 50;
+		
+		timeText.text = parseInt(timeText.text) + 50;
+		this.winConCheck();
+	},
+	onClicked: function(charx){
+		hitAreas.forEach(function(item) {	
+			if(!(typeof item === "undefined")){
+				hitAreas.remove(item);
+				item.destroy();
+			}
+		});		
+		
+		status = 'hiding';
+		charx.body.velocity.y = 50;
+		
+		timeText.text = parseInt(timeText.text) + 50;
+		this.winConCheck();
+	},
+	winConCheck: function(){
+		if(parseInt(timeText.text) >= 150){
+			timeText.text = "You win!!!";
+			game.paused = true;
+		}
 	}
 };
 
