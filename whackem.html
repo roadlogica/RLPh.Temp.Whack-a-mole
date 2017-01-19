@@ -21,12 +21,6 @@ BasicGame.Boot = function (game) {};
 
 var timer, timerEvent, text;
 var timeText;
-var hole1;
-var hole2;
-var hole3;
-var hole4;
-var hole5;
-var hole6;
 var char1;
 var char2;
 var char3;
@@ -36,12 +30,13 @@ var char6;
 var riser;
 var riserY;
 var status;
+var hits;
 
 BasicGame.Boot.prototype = {
     preload: function () {
         game.load.image('background', 'assets/bg.png');
 		game.load.image('char', 'assets/char.png');
-		game.load.image('hammer', 'assets/hammer.png');
+		game.load.image('hit', 'assets/hit.png');
 		game.load.image('hole', 'assets/hole.png');
 		game.load.image('curtain', 'assets/curtain.png');
     },
@@ -50,7 +45,7 @@ BasicGame.Boot.prototype = {
 	
 	    //  A simple background for our game
 		game.add.sprite(0, 0, 'background');
-        
+			
 		upperholes = game.add.group();
 		upperholes.enableBody = true;
 
@@ -129,12 +124,22 @@ BasicGame.Boot.prototype = {
 		//  The score
 		timeText = game.add.text(16, 16, '0', { fontSize: '32px', fill: '#000' });
 		
+		hits = game.add.group();
+		hits.enableBody = true;
+		
+		var hit;
+
+		game.input.onTap.add(function(pointer) {
+		  hit = hits.create(pointer.position.x -61, pointer.position.y-61, 'hit');
+		  hit.body.immovable = true;	
+		});
+		
 		//game.time.events.repeat(Phaser.Timer.SECOND * 2, 15, this.peekChar(), this);
 		riser = this.pickChar();
 		this.peekChar(riser);
     },
     update: function () {
-		if(Math.round(riser.position.y) == Math.round((riserY - 130)) && status == 'rising'){
+		if(Math.round(riser.position.y) <= Math.round((riserY - 130)) && status == 'rising'){
 			this.hideChar();
 		}
  		else if(Math.round(riser.position.y) == Math.round((riserY)) && status == 'hiding'){
@@ -142,6 +147,19 @@ BasicGame.Boot.prototype = {
 			riser = this.pickChar();
 			this.peekChar(riser);
 		}
+		
+		hits.forEach(function(item) {	
+			if(!(typeof item === "undefined")){
+				item.alpha = item.alpha - 0.006;			
+
+				if (item.alpha <= 0)
+				{
+					hits.remove(item);
+					item.destroy();
+				}
+			}			
+		});
+
     },
     render: function () {	
 		//timeText.text = riserY + " --- " + riser.position.y;
