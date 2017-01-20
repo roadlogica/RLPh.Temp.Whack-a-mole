@@ -1,0 +1,11 @@
+{
+	"name":"Whack-a-Mole",
+	"holeStartPointX":100,
+	"holeStartPointY":270,
+	"holeSpacingX":200,
+	"holeSpecingY":215,
+	"molePopulation":6,
+	"molePerRow":3,
+	"font": { "fontSize": "32px", "fill": "#000" },
+	"risers":3
+}

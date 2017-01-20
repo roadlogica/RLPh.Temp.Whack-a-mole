@@ -19,123 +19,77 @@ var BasicGame = function (game) {};
 
 BasicGame.Boot = function (game) {};
 
+var gameSettings;
 var timer, timerEvent, text;
 var timeText;
-var char1;
-var char2;
-var char3;
-var char4;
-var char5;
-var char6;
-var riser;
-var riserY;
-var status;
+var risers = [];
+var riserY = [];
+var riserStatus = [];
 var hitEffects;
 var hitAreas;
+var moles;
 
 BasicGame.Boot.prototype = {
     preload: function () {
-        game.load.image('background', 'assets/bg.png');
-		game.load.image('char', 'assets/char.png');
-		game.load.image('hit', 'assets/hit.png');
-		game.load.image('hole', 'assets/hole.png');
-		game.load.image('curtain', 'assets/curtain.png');
+		game.load.json('gamesettings', 'assets/gamesettings.json');
+		game.load.image('background', 'assets/default/bg.png');
+		game.load.image('char', 'assets/default/char.png');
+		game.load.image('hit', 'assets/default/hit.png');
+		game.load.image('hole', 'assets/default/hole.png');
+		game.load.image('curtain', 'assets/default/curtain.png');
     },
-    create: function () {
+   create: function () {
+		gameSettings = game.cache.getJSON('gamesettings');
+		
 		game.physics.startSystem(Phaser.Physics.ARCADE);
 	
 	    //  A simple background for our game
 		game.add.sprite(0, 0, 'background');
+					
+		stage = game.add.group();
+		stage.enableBody = true;
+		moles = game.add.group();
+		moles.enableBody = true;
+		
+		stage.add(moles);
+		
+		var holeStartPointX = parseInt(gameSettings.holeStartPointX);
+		var holeStartPointY = parseInt(gameSettings.holeStartPointY);
+		var holeSpacingX = parseInt(gameSettings.holeSpacingX);
+		var holeSpacingY = parseInt(gameSettings.holeSpecingY);
+		var molePop = parseInt(gameSettings.molePopulation);
+		var molePerRow = parseInt(gameSettings.molePerRow);
+		var row = 0;
+		var inRow = 0;
+		
+		//Create moles
+		for (i = 0; i < (molePop); i++) { 
+			var xPos = parseInt(holeStartPointX) + ((i >= molePerRow ? (i - (molePerRow)): i) * parseInt(holeSpacingX));
+			hole1 = stage.create(xPos, parseInt(holeStartPointY) + (row * parseInt(holeSpacingY)), 'hole');
+			hole1.body.immovable = true;
 			
-		upperholes = game.add.group();
-		upperholes.enableBody = true;
-
-		// Holes 1-3
-		hole1 = upperholes.create(100, 270, 'hole');
-		hole1.body.immovable = true;
+			mole = stage.create(xPos, parseInt(holeStartPointY) + (row * parseInt(holeSpacingY)) + 20, 'char');
+			mole.body.moves = true;
+			mole.inputEnabled = true;
+			mole.events.onInputDown.add(this.onCharClicked, this);
+			mole.input.priorityID = 0 + row;
+			mole.moleNo = i + 1;
 		
-		hole2 = upperholes.create(300, 270, 'hole');
-		hole2.body.immovable = true;
-				
-		hole3 = upperholes.create(500, 270, 'hole');
-		hole3.body.immovable = true;
-
-		lowerholes = game.add.group();
-		lowerholes.enableBody = true;
-		
-		hole4 = lowerholes.create(100, 485, 'hole');
-		hole4.body.immovable = true;
-		
-		hole5 = lowerholes.create(300, 485, 'hole');
-		hole5.body.immovable = true;
-		
-		hole6 = lowerholes.create(500, 485, 'hole');
-		hole6.body.immovable = true;		
-		
-		//Characters
-		upperchars = game.add.group();
-		upperchars.enableBody = true;
-		
-		char1 = upperchars.create(100, 290, 'char');
-		char1.body.moves = true;
-		char1.inputEnabled = true;
-		char1.events.onInputDown.add(this.onClicked, this);
-		
-		char2 = upperchars.create(300, 290, 'char');
-		char2.body.moves = true;
-		char2.inputEnabled = true;
-		char2.events.onInputDown.add(this.onClicked, this);
-		
-		char3 = upperchars.create(500, 290, 'char');
-		char3.body.moves = true;
-		char3.inputEnabled = true;
-		char3.events.onInputDown.add(this.onClicked, this);
-		
-		//'Curtains' that hide the characters
-		uppercurtains = game.add.group();
-		uppercurtains.enableBody = true;
-		
-		curtain1 = uppercurtains.create(100, 290, 'curtain');
-		curtain1.body.immovable = true;
-		
-		curtain2 = uppercurtains.create(300, 290, 'curtain');
-		curtain2.body.immovable = true;
-				
-		curtain3 = uppercurtains.create(500, 290, 'curtain');
-		curtain3.body.immovable = true;
-		
-		lowerchars = game.add.group();
-		lowerchars.enableBody = true;
-		
-		char4 = lowerchars.create(100, 505, 'char');
-		char4.body.moves = true;
-		char4.inputEnabled = true;
-		char4.events.onInputDown.add(this.onClicked, this);
-		
-		char5 = lowerchars.create(300, 505, 'char');
-		char5.body.moves = true;
-		char5.inputEnabled = true;
-		char5.events.onInputDown.add(this.onClicked, this);
-		
-		char6 = lowerchars.create(500, 505, 'char');
-		char6.body.moves = true;
-		char6.inputEnabled = true;
-		char6.events.onInputDown.add(this.onClicked, this);
+			curtain1 = stage.create(xPos, parseInt(holeStartPointY) + (row * parseInt(holeSpacingY)) + 20, 'curtain');
+			curtain1.body.immovable = true;
+			curtain1.inputEnabled = true;
+			curtain1.events.onInputDown.add(this.onCurtainClicked, this);
+			curtain1.input.priorityID = 1 + row;			
 			
-		lowercurtains = game.add.group();
-		lowercurtains.enableBody = true;
-		
-		curtain4 = lowercurtains.create(100, 505, 'curtain');
-		curtain4.body.immovable = true;
-		
-		curtain5 = lowercurtains.create(300, 505, 'curtain');
-		curtain5.body.immovable = true;
-		
-		curtain6 = lowercurtains.create(500, 505, 'curtain');
-		curtain6.body.immovable = true;		
+			inRow = inRow + 1;
+			if(inRow == molePerRow){
+				row = row + 1;
+				inRow = 0;
+			}
+		}
 		
 		//  The score
-		timeText = game.add.text(16, 16, '0', { fontSize: '32px', fill: '#000' });
+		timeText = game.add.text(16, 16, '0', gameSettings.font);
 		
 		hitAreas = game.add.group();
 		hitAreas.enableBody = true;
@@ -157,22 +111,34 @@ BasicGame.Boot.prototype = {
 		  hit.alpha =  0;
 		});
 		
-		riser = this.pickChar();
-		this.peekChar(riser);
+		while(risers.length < parseInt(gameSettings.risers)){
+			this.pickChar();
+		}
+	
     },
     update: function () {
-	    game.physics.arcade.collide(hitAreas, lowerchars, this.onHit);
-		//game.physics.arcade.collide(hitAreas, upperchars, this.onHit);
-		
-		if(Math.round(riser.position.y) <= Math.round((riserY - 130)) && status == 'rising'){
-			this.hideChar();
-		}
- 		else if(Math.round(riser.position.y) == Math.round((riserY)) && status == 'hiding'){
-			riser.body.velocity.y = 0;
-			riser = this.pickChar();
-			this.peekChar(riser);
-		}
-		
+	    game.physics.arcade.collide(hitAreas, stage, this.onHit);
+		var riserIndex;
+		stage.forEach(function(riser) {			
+			if(!(typeof riser.moleNo === "undefined")){			
+				if(risers.indexOf(riser.moleNo) > -1) {
+					riserIndex = risers.indexOf(riser.moleNo);						
+					if(Math.round(riser.position.y) <= Math.round((riserY[riserIndex] - 130)) && riserStatus[riserIndex] == 'rising'){
+						this.hideChar(riser.moleNo);
+					}
+					else if(Math.round(riser.position.y) == Math.round((riserY[riserIndex])) && riserStatus[riserIndex]  == 'hiding'){
+						riser.body.velocity.y = 0;
+						if (riserIndex > -1) {
+							risers.splice(riserIndex, 1);
+							riserY.splice(riserIndex, 1);
+							riserStatus.splice(riserIndex, 1);
+							this.pickChar();
+						}
+						
+					}
+				}
+			}
+		}, this);
 		hitEffects.forEach(function(item) {	
 			if(!(typeof item === "undefined")){
 				var oldWidth = item.width;
@@ -204,47 +170,32 @@ BasicGame.Boot.prototype = {
     },
 	pickChar: function() {
 		var rand = Math.floor(Math.random() * 6) + 1;
-		var charx;
-		if(rand ==1){
-			charx = char1;
-		}else if(rand ==2){
-			charx = char2;
-		}else if(rand ==3){
-			charx = char3;
-		}else if(rand ==4){
-			charx = char4;
-		}else if(rand ==5){
-			charx = char5;
-		}else if(rand ==6){
-			charx = char6;
+		while(risers.indexOf(rand) > -1){
+			rand = Math.floor(Math.random() * 6) + 1;
 		}
-		riserY = charx.position.y;
+		var charx;
+		stage.forEach(function(enemy) {
+			if(enemy.moleNo == rand) {  
+				charx = enemy;  
+			}
+		}, this);
+		risers.push(rand);
+		charx.body.velocity.y = -50;
+		riserY.push(charx.position.y);
+		riserStatus.push('rising');
 		return charx;
 	},
-	peekChar: function(){
-		riser.body.velocity.y = -50;
-		status = 'rising';
-	},
-	hideChar: function(){
-		riser.body.velocity.y = 50;
-		status = 'hiding';
-	},
-	onHit: function(hit, charx){
-
-	    hitAreas.forEach(function(item) {	
-			if(!(typeof item === "undefined")){
-				hitAreas.remove(item);
-				item.destroy();
+	hideChar: function(moleNo){
+		var ind = risers.indexOf(moleNo);	
+		stage.forEach(function(mole) {
+			if(mole.moleNo == moleNo) {  
+				mole.body.velocity.y = 50;
+				riserStatus[ind] = 'hiding';  
 			}
-		});		
-		
-		status = 'hiding';
-		charx.body.velocity.y = 50;
-		
-		timeText.text = parseInt(timeText.text) + 50;
-		this.winConCheck();
+		}, this);
+
 	},
-	onClicked: function(charx){
+	onCharClicked: function(charx){
 		hitAreas.forEach(function(item) {	
 			if(!(typeof item === "undefined")){
 				hitAreas.remove(item);
@@ -263,6 +214,9 @@ BasicGame.Boot.prototype = {
 			timeText.text = "You win!!!";
 			game.paused = true;
 		}
+	},
+	onCurtainClicked: function(charx){
+
 	}
 };
 
