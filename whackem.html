@@ -209,17 +209,20 @@ BasicGame.Boot.prototype = {
 		status = 'hiding';
 		charx.body.velocity.y = 50;
 		
-		timeText.text = parseInt(timeText.text) + 50;
+		timeText.text = parseInt(timeText.text) + parseInt(gameSettings.pointsPerHit));
 		this.winConCheck();
 	},
 	winConCheck: function(){
-		if(parseInt(timeText.text) >= 150){
+		if(parseInt(timeText.text) >= parseInt(gameSettings.winWhen)){
 			timeText.text = "You win!!!";
-			game.paused = true;
+			this.onWin();
 		}
 	},
 	onCurtainClicked: function(charx){
 
+	},
+	onWin: function(){
+		//Bryan do your thing
 	}
 };
 

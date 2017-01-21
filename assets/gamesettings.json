@@ -8,5 +8,8 @@
 	"molePerRow":3,
 	"font": { "fontSize": "32px", "fill": "#000" },
 	"risers":3,
-	"moveSpeedMax":250
+	"moveSpeedMax":250,
+	"winWhen": 150,
+	"pointsPerHit":50,
+	"pointsWon":300
 }
