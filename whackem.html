@@ -19,15 +19,20 @@ var BasicGame = function (game) {};
 
 BasicGame.Boot = function (game) {};
 
+var pts;
 var gameSettings;
 var timer, timerEvent, text;
-var timeText;
+var scoreText;
+var messageText;
 var risers = [];
 var riserY = [];
 var riserStatus = [];
 var hitEffects;
 var hitAreas;
 var moles;
+var board;
+var startButton;
+var againButton;
 
 BasicGame.Boot.prototype = {
     preload: function () {
@@ -37,6 +42,9 @@ BasicGame.Boot.prototype = {
 		game.load.image('hit', 'assets/default/hit.png');
 		game.load.image('hole', 'assets/default/hole.png');
 		game.load.image('curtain', 'assets/default/curtain.png');
+		game.load.image('again', 'assets/default/again.png');
+		game.load.image('start', 'assets/default/start.png');
+		game.load.image('board', 'assets/default/board.png');
     },
    create: function () {
 		gameSettings = game.cache.getJSON('gamesettings');
@@ -89,7 +97,7 @@ BasicGame.Boot.prototype = {
 		}
 		
 		//  The score
-		timeText = game.add.text(16, 16, '00', gameSettings.font);
+		scoreText = game.add.text(16, 16, '00', gameSettings.font);
 		
 		hitAreas = game.add.group();
 		hitAreas.enableBody = true;
@@ -111,11 +119,36 @@ BasicGame.Boot.prototype = {
 		  hit.alpha =  0;
 		});
 		
+		this.showStart();
+    },
+	showStart: function(){
+		board = game.add.sprite(200,150, 'board');
+		
+		startButton = game.add.sprite(300,300, 'start');
+		startButton.inputEnabled = true;
+		startButton.events.onInputDown.add(this.onStart, this);
+		startButton.input.priorityID = 1000;
+		
+		againButton = game.add.sprite(300,300, 'again');
+		againButton.inputEnabled = true;
+		againButton.events.onInputDown.add(this.onStart, this);
+		againButton.input.priorityID = 1000;
+		againButton.alpha = 0;
+		
+		messageText = game.add.text(250, 200, '', gameSettings.font);
+		//messageText.text = "CONGRATULATIONS!\n You have won \n" + gameSettings.pointsWon + " points!";
+	},
+	onStart: function(){
+		board.alpha = 0;
+		startButton.alpha = 0;
+		againButton.alpha = 0;
+		messageText.alpha = 0;
+		scoreText.text = "00";
 		while(risers.length < parseInt(gameSettings.risers)){
 			this.pickChar();
 		}
-	
-    },
+		
+	},	
     update: function () {
 	    game.physics.arcade.collide(hitAreas, stage, this.onHit);
 		var riserIndex;
@@ -209,13 +242,16 @@ BasicGame.Boot.prototype = {
 		status = 'hiding';
 		charx.body.velocity.y = 50;
 		
-		timeText.text = parseInt(timeText.text) + parseInt(gameSettings.pointsPerHit));
+		scoreText.text = parseInt(scoreText.text) + parseInt(gameSettings.pointsPerHit);
 		this.winConCheck();
 	},
 	winConCheck: function(){
-		if(parseInt(timeText.text) >= parseInt(gameSettings.winWhen)){
-			timeText.text = "You win!!!";
+		if(parseInt(scoreText.text) >= parseInt(gameSettings.winWhen)){
 			this.onWin();
+			board.alpha = 1;
+			againButton.alpha = 1;	
+			messageText.alpha = 1;			
+			messageText.text = "CONGRATULATIONS!\n You have won \n" + gameSettings.pointsWon + " points!";
 		}
 	},
 	onCurtainClicked: function(charx){

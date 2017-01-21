@@ -6,10 +6,10 @@
 	"holeSpecingY":215,
 	"molePopulation":6,
 	"molePerRow":3,
-	"font": { "fontSize": "32px", "fill": "#000" },
+	"font": { "fontSize": "32px", "fill": "#000", "align" : "center" },
 	"risers":3,
 	"moveSpeedMax":250,
-	"winWhen": 150,
+	"winWhen": 250,
 	"pointsPerHit":50,
 	"pointsWon":300
 }
