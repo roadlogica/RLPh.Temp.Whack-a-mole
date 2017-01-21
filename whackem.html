@@ -89,7 +89,7 @@ BasicGame.Boot.prototype = {
 		}
 		
 		//  The score
-		timeText = game.add.text(16, 16, '0', gameSettings.font);
+		timeText = game.add.text(16, 16, '00', gameSettings.font);
 		
 		hitAreas = game.add.group();
 		hitAreas.enableBody = true;
@@ -126,9 +126,10 @@ BasicGame.Boot.prototype = {
 					if(Math.round(riser.position.y) <= Math.round((riserY[riserIndex] - 130)) && riserStatus[riserIndex] == 'rising'){
 						this.hideChar(riser.moleNo);
 					}
-					else if(Math.round(riser.position.y) == Math.round((riserY[riserIndex])) && riserStatus[riserIndex]  == 'hiding'){
+					else if(Math.round(riser.position.y) >= Math.round((riserY[riserIndex])) && riserStatus[riserIndex]  == 'hiding'){
 						riser.body.velocity.y = 0;
 						if (riserIndex > -1) {
+							//riser.position.y = parseInt(riserY[riserIndex]);
 							risers.splice(riserIndex, 1);
 							riserY.splice(riserIndex, 1);
 							riserStatus.splice(riserIndex, 1);
@@ -170,6 +171,7 @@ BasicGame.Boot.prototype = {
     },
 	pickChar: function() {
 		var rand = Math.floor(Math.random() * 6) + 1;
+		var speed = Math.floor(Math.random() * parseInt(gameSettings.moveSpeedMax)) + 71;
 		while(risers.indexOf(rand) > -1){
 			rand = Math.floor(Math.random() * 6) + 1;
 		}
@@ -180,7 +182,8 @@ BasicGame.Boot.prototype = {
 			}
 		}, this);
 		risers.push(rand);
-		charx.body.velocity.y = -50;
+		charx.body.velocity.y = -1*speed;
+		charx.speed=speed;
 		riserY.push(charx.position.y);
 		riserStatus.push('rising');
 		return charx;
@@ -189,7 +192,7 @@ BasicGame.Boot.prototype = {
 		var ind = risers.indexOf(moleNo);	
 		stage.forEach(function(mole) {
 			if(mole.moleNo == moleNo) {  
-				mole.body.velocity.y = 50;
+				mole.body.velocity.y = mole.speed;
 				riserStatus[ind] = 'hiding';  
 			}
 		}, this);

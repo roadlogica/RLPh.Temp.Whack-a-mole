@@ -7,5 +7,6 @@
 	"molePopulation":6,
 	"molePerRow":3,
 	"font": { "fontSize": "32px", "fill": "#000" },
-	"risers":3
+	"risers":3,
+	"moveSpeedMax":250
 }
