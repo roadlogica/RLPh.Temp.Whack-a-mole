@@ -45,7 +45,7 @@ BasicGame.Boot.prototype = {
 		game.load.image('start', 'assets/default/start.png');
 		game.load.image('board', 'assets/default/board.png');
     },
-   create: function () {
+    create: function () {
 		gameSettings = game.cache.getJSON('gamesettings');
 		
 		game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -126,6 +126,7 @@ BasicGame.Boot.prototype = {
 		this.showStart();
     },
 	showStart: function(){
+		gameActive = false;
 		board = game.add.sprite(200,150, 'board');
 		
 		startButton = game.add.sprite(300,300, 'start');
@@ -140,7 +141,7 @@ BasicGame.Boot.prototype = {
 		againButton.alpha = 0;
 		
 		messageText = game.add.text(250, 200, '', gameSettings.font);
-		gameActive = false;
+		
 		//messageText.text = "CONGRATULATIONS!\n You have won \n" + gameSettings.pointsWon + " points!";
 	},
 	onStart: function(){
@@ -151,30 +152,34 @@ BasicGame.Boot.prototype = {
 		messageText.alpha = 0;
 		scoreText.text = "00";
 		risers = [];
+		gameActive = true;
 		while(risers.length < parseInt(gameSettings.risers)){
 			this.pickChar();
 		}
-		gameActive = true;
+		
 	},	
     update: function () {
 	    game.physics.arcade.collide(hitAreas, stage, this.onHit);
 		var riserIndex;
-		if(gameActive == true){
+		if(gameActive == true){			
 			stage.forEach(function(riser) {			
 				if(!(typeof riser.moleNo === "undefined")){			
 					if(risers.indexOf(riser.moleNo) > -1) {
-						riserIndex = risers.indexOf(riser.moleNo);		
-						if(Math.round(riser.position.y) <= Math.round((riser.startPositionY- 130)) && riser.status == 'rising'){
-							this.hideChar(riser.moleNo);
+						riserIndex = risers.indexOf(riser.moleNo);
+						
+						if(Math.round(riser.position.y) <= Math.round((riser.startPositionY - 100)) && riser.status == 'rising'){
+							riser.body.velocity.y = 50;
+							riser.status = 'hiding'; 
 						}
-						else if(Math.round(riser.position.y) >= Math.round((riser.startPositionY)) && riser.status  == 'hiding'){
+						else if(Math.round(riser.position.y) >= Math.round((parseInt(riser.startPositionY))) && riser.status  == 'hiding'){
+							riser.moves = false;
 							riser.body.velocity.y = 0;
+							riser.position.x = riser.startPositionX;
+							riser.position.y = riser.startPositionY;
 							riser.status = 'none';
-							if (riserIndex > -1) {
+
 								risers.splice(riserIndex, 1);
-								this.pickChar();
-							}
-							
+								this.pickChar();				
 						}
 					}
 				}
@@ -215,24 +220,17 @@ BasicGame.Boot.prototype = {
 			rand = Math.floor(Math.random() * 6) + 1;
 		}
 		var charx;
-		stage.forEach(function(enemy) {
-			if(enemy.moleNo == rand) {  
-				charx = enemy;  
+		stage.forEach(function(item) {	
+			if(item.moleNo == rand) {  
+				charx = item;  
 			}
-		}, this);
+		});
 		risers.push(rand);
-		charx.body.velocity.y = -1*speed;
+		charx.body.velocity.y = -1 * speed;
 		charx.speed = speed;
 		charx.status = 'rising';
+		charx.moves = true;
 		return charx;
-	},
-	hideChar: function(moleNo){	
-		stage.forEach(function(mole) {
-			if(mole.moleNo == moleNo) {  
-				mole.body.velocity.y = mole.speed;
-				mole.status = 'hiding';  
-			}
-		}, this);
 	},
 	onCharClicked: function(charx){
 		hitAreas.forEach(function(item) {	
@@ -256,15 +254,12 @@ BasicGame.Boot.prototype = {
 			messageText.alpha = 1;	
 			stage.forEach(function(mole) {
 				if(!(typeof mole.moleNo === 'undefined')){
+					mole.reset(mole.startPositionX, mole.startPositionY, 1);
 					mole.body.velocity.y = 0;
-					mole.status = 'none';
-					mole.position.setTo(mole.startPositionX, mole.startPositionY);
-					console.log(mole);
+					mole.status = 'none';	
 				}
 			}, this);			
 			messageText.text = "CONGRATULATIONS!\n You have won \n" + gameSettings.pointsWon + " points!";
-	
-
 		}
 	},
 	onCurtainClicked: function(charx){
