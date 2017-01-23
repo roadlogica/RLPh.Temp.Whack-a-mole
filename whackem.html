@@ -13,7 +13,7 @@
 <body>
 
 <script type="text/javascript">
-var game = new Phaser.Game(800, 600, Phaser.AUTO, 'test', null, false, false);
+var game = new Phaser.Game(750, 1334, Phaser.AUTO, 'test', null, false, false);
 
 var BasicGame = function (game) {};
 
@@ -32,18 +32,22 @@ var board;
 var startButton;
 var againButton;
 var gameActive;
+var logo;
+var grats;
 
 BasicGame.Boot.prototype = {
     preload: function () {
 		game.load.json('gamesettings', 'assets/gamesettings.json');
-		game.load.image('background', 'assets/default/bg.png');
+		game.load.image('background', 'assets/default/bg_world.png');
 		game.load.image('char', 'assets/default/char.png');
 		game.load.image('hit', 'assets/default/hit.png');
 		game.load.image('hole', 'assets/default/hole.png');
 		game.load.image('curtain', 'assets/default/curtain.png');
-		game.load.image('again', 'assets/default/again.png');
-		game.load.image('start', 'assets/default/start.png');
+		game.load.image('again', 'assets/default/btn-play-again.png');
+		game.load.image('start', 'assets/default/btn-play-now.png');
 		game.load.image('board', 'assets/default/board.png');
+		game.load.image('logo', 'assets/logo.png');
+		game.load.image('congratulations', 'assets/default/img-congrats.png');
     },
     create: function () {
 		gameSettings = game.cache.getJSON('gamesettings');
@@ -127,22 +131,22 @@ BasicGame.Boot.prototype = {
     },
 	showStart: function(){
 		gameActive = false;
-		board = game.add.sprite(200,150, 'board');
+		board = game.add.sprite(55,200, 'board');
 		
-		startButton = game.add.sprite(300,300, 'start');
+		logo = game.add.sprite(75,275, 'logo');
+		
+		startButton = game.add.sprite(225,775, 'start');
 		startButton.inputEnabled = true;
 		startButton.events.onInputDown.add(this.onStart, this);
 		startButton.input.priorityID = 1000;
 		
-		againButton = game.add.sprite(300,300, 'again');
+		againButton = game.add.sprite(200,775, 'again');
 		againButton.inputEnabled = true;
 		againButton.events.onInputDown.add(this.onStart, this);
 		againButton.input.priorityID = 1000;
 		againButton.alpha = 0;
 		
-		messageText = game.add.text(250, 200, '', gameSettings.font);
-		
-		//messageText.text = "CONGRATULATIONS!\n You have won \n" + gameSettings.pointsWon + " points!";
+		messageText = game.add.text(175, 550, '', gameSettings.font);
 	},
 	onStart: function(){
 		gameActive = false;
@@ -150,6 +154,10 @@ BasicGame.Boot.prototype = {
 		startButton.alpha = 0;
 		againButton.alpha = 0;
 		messageText.alpha = 0;
+		if(!(typeof grats === "undefined")){	
+		grats.alpha = 0;
+		}
+		logo.alpha = 0;
 		scoreText.text = "00";
 		risers = [];
 		gameActive = true;
@@ -164,23 +172,29 @@ BasicGame.Boot.prototype = {
 		if(gameActive == true){			
 			stage.forEach(function(riser) {			
 				if(!(typeof riser.moleNo === "undefined")){			
-					if(risers.indexOf(riser.moleNo) > -1) {
-						riserIndex = risers.indexOf(riser.moleNo);
-						
-						if(Math.round(riser.position.y) <= Math.round((riser.startPositionY - 100)) && riser.status == 'rising'){
-							riser.body.velocity.y = 50;
-							riser.status = 'hiding'; 
-						}
-						else if(Math.round(riser.position.y) >= Math.round((parseInt(riser.startPositionY))) && riser.status  == 'hiding'){
-							riser.moves = false;
-							riser.body.velocity.y = 0;
-							riser.position.x = riser.startPositionX;
-							riser.position.y = riser.startPositionY;
-							riser.status = 'none';
+					riserIndex = risers.indexOf(riser.moleNo);
+					if(Math.round(riser.position.y) <= Math.round((riser.startPositionY - 100)) && riser.status == 'rising'){
+						riser.body.velocity.y = 50;
+						riser.status = 'hiding'; 
+					}              
+					else if(Math.round(riser.position.y) >= Math.round((parseInt(riser.startPositionY))) && riser.status  == 'hiding'){
+						riser.moves = false;
+						riser.body.velocity.y = 0;
+						riser.position.x = riser.startPositionX;
+						riser.position.y = riser.startPositionY;
+						riser.status = 'none';
+						risers.splice(riserIndex, 1);
 
-								risers.splice(riserIndex, 1);
-								this.pickChar();				
+						while(risers.length < parseInt(gameSettings.risers)){
+							this.pickChar();
 						}
+						
+					}else if(riser.status == 'none'){
+						riser.moves = false;
+						riser.body.velocity.y = 0;
+						riser.position.x = riser.startPositionX;
+						riser.position.y = riser.startPositionY;
+						riser.status = 'none';
 					}
 				}
 			}, this);
@@ -246,7 +260,6 @@ BasicGame.Boot.prototype = {
 		this.winConCheck();
 	},
 	winConCheck: function(){
-		gameActive = false;	
 		if(parseInt(scoreText.text) >= parseInt(gameSettings.winWhen)){
 			this.onWin();
 			board.alpha = 1;
@@ -254,12 +267,16 @@ BasicGame.Boot.prototype = {
 			messageText.alpha = 1;	
 			stage.forEach(function(mole) {
 				if(!(typeof mole.moleNo === 'undefined')){
-					mole.reset(mole.startPositionX, mole.startPositionY, 1);
+					mole.moves = false;
+					mole.position.x = mole.startPositionX;
+					mole.position.y = mole.startPositionY;
 					mole.body.velocity.y = 0;
 					mole.status = 'none';	
 				}
 			}, this);			
-			messageText.text = "CONGRATULATIONS!\n You have won \n" + gameSettings.pointsWon + " points!";
+			messageText.text = "You have won \n" + gameSettings.pointsWon + " points!";
+			grats = game.add.sprite(48,275, 'congratulations');
+
 		}
 	},
 	onCurtainClicked: function(charx){

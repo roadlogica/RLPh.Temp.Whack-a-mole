@@ -1,15 +1,15 @@
 {
 	"name":"Whack-a-Mole",
 	"holeStartPointX":100,
-	"holeStartPointY":270,
+	"holeStartPointY":770,
 	"holeSpacingX":200,
 	"holeSpecingY":215,
 	"molePopulation":6,
 	"molePerRow":3,
-	"font": { "fontSize": "32px", "fill": "#000", "align" : "center" },
-	"risers":3,
+	"font": { "font": "60px Open Sans", "fill": "#000", "align" : "center" },
+	"risers":1,
 	"moveSpeedMax":250,
-	"winWhen": 250,
+	"winWhen": 150,
 	"pointsPerHit":50,
-	"pointsWon":300
+	"pointsWon":250
 }
