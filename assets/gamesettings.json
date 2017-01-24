@@ -1,9 +1,5 @@
 {
 	"name":"Whack-a-Mole",
-	"holeStartPointX":100,
-	"holeStartPointY":770,
-	"holeSpacingX":200,
-	"holeSpecingY":215,
 	"molePopulation":6,
 	"molePerRow":3,
 	"font": { "font": "60px Open Sans", "fill": "#000", "align" : "center" },

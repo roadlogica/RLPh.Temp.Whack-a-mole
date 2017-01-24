@@ -7,6 +7,7 @@
     <style type="text/css">
         body {
             margin: 0;
+			padding:0;
         }
     </style>
 </head>
@@ -22,7 +23,7 @@ window.addEventListener('resize', function() {
        adjust();
 });
 
-var game = new Phaser.Game(750, 1334, Phaser.AUTO, 'test', null, false, false);
+var game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.AUTO, 'test', null, false, false);
 
 var BasicGame = function (game) {};
 
@@ -43,6 +44,8 @@ var againButton;
 var gameActive;
 var logo;
 var grats;
+var gameWidth = window.innerWidth / 750;
+var gameHeight = window.innerHeight / 1334;
 
 BasicGame.Boot.prototype = {
     preload: function () {
@@ -78,19 +81,22 @@ BasicGame.Boot.prototype = {
 		game.physics.startSystem(Phaser.Physics.ARCADE);
 	
 	    //  A simple background for our game
-		game.add.sprite(0, 0, 'background');
-					
+		var bg = game.add.sprite(0, 0, 'background');
+		bg.scale.setTo(gameWidth, gameHeight);	
+		
+
+		
 		stage = game.add.group();
 		stage.enableBody = true;
 		moles = game.add.group();
 		moles.enableBody = true;
 		
 		stage.add(moles);
-		
-		var holeStartPointX = parseInt(gameSettings.holeStartPointX);
-		var holeStartPointY = parseInt(gameSettings.holeStartPointY);
-		var holeSpacingX = parseInt(gameSettings.holeSpacingX);
-		var holeSpacingY = parseInt(gameSettings.holeSpecingY);
+		console.log(gameWidth);
+		var holeStartPointX = parseInt(window.innerWidth * 0.12);
+		var holeStartPointY = parseInt(window.innerHeight * 0.65);
+		var holeSpacingX = parseInt(window.innerWidth / 3.5);
+		var holeSpacingY = parseInt(window.innerHeight / 5.1);
 		var molePop = parseInt(gameSettings.molePopulation);
 		var molePerRow = parseInt(gameSettings.molePerRow);
 		var row = 0;
@@ -154,22 +160,22 @@ BasicGame.Boot.prototype = {
     },
 	showStart: function(){
 		gameActive = false;
-		board = game.add.sprite(55,200, 'board');
+		board = game.add.sprite(window.innerWidth/7, window.innerHeight / 3.5, 'board');
 		
-		logo = game.add.sprite(75,275, 'logo');
+		logo = game.add.sprite(window.innerWidth/6,window.innerHeight / 3, 'logo');
 		
-		startButton = game.add.sprite(225,775, 'start');
+		startButton = game.add.sprite(window.innerWidth/3,window.innerHeight / 1.55, 'start');
 		startButton.inputEnabled = true;
 		startButton.events.onInputDown.add(this.onStart, this);
 		startButton.input.priorityID = 1000;
 		
-		againButton = game.add.sprite(200,775, 'again');
+		againButton = game.add.sprite(window.innerWidth/3.3,window.innerHeight / 1.55, 'again');
 		againButton.inputEnabled = true;
 		againButton.events.onInputDown.add(this.onStart, this);
 		againButton.input.priorityID = 1000;
 		againButton.alpha = 0;
 		
-		messageText = game.add.text(175, 550, '', gameSettings.font);
+		messageText = game.add.text(window.innerWidth/3.7, window.innerHeight / 2, '', gameSettings.font);
 	},
 	onStart: function(){
 		gameActive = false;
@@ -288,7 +294,7 @@ BasicGame.Boot.prototype = {
 				}
 			});			
 			messageText.text = "You have won \n" + gameSettings.pointsWon + " points!";
-			grats = game.add.sprite(48,275, 'congratulations');
+			grats = game.add.sprite(window.innerWidth/7.4,window.innerHeight / 3, 'congratulations');
 
 		}
 	},
