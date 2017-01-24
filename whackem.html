@@ -2,7 +2,7 @@
 <html lang="en"> 
 <head> 
 	<meta charset="UTF-8" />
-    <title>Whackem</title>
+    <title>Whack-a-mole</title>
 	<script type="text/javascript" src="js/phaser.min.js"></script>
     <style type="text/css">
         body {
@@ -13,6 +13,15 @@
 <body>
 
 <script type="text/javascript">
+function adjust() {	
+	var divgame = document.getElementById("game");
+	divgame.style.width = window.innerWidth + "px";	divgame.style.height = window.innerHeight + "px";
+}
+
+window.addEventListener('resize', function() {
+       adjust();
+});
+
 var game = new Phaser.Game(750, 1334, Phaser.AUTO, 'test', null, false, false);
 
 var BasicGame = function (game) {};
@@ -37,6 +46,17 @@ var grats;
 
 BasicGame.Boot.prototype = {
     preload: function () {
+		this.create = function() {
+			console.debug("Setup pointer and scale");
+			game.input.maxPointers = 1;
+			game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+			game.scale.pageAlignHorizontally = true;
+			game.scale.pageAlignVertically = true;
+			game.scale.setScreenSize(true);
+			game.scale.refresh();
+			adjust();
+		};
+	
 		game.load.json('gamesettings', 'assets/gamesettings.json');
 		game.load.image('background', 'assets/default/bg_world.png');
 		game.load.image('char', 'assets/default/char.png');
@@ -50,6 +70,9 @@ BasicGame.Boot.prototype = {
 		game.load.image('congratulations', 'assets/default/img-congrats.png');
     },
     create: function () {
+		game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+		game.scale.setShowAll();
+
 		gameSettings = game.cache.getJSON('gamesettings');
 		
 		game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -170,34 +193,22 @@ BasicGame.Boot.prototype = {
 	    game.physics.arcade.collide(hitAreas, stage, this.onHit);
 		var riserIndex;
 		if(gameActive == true){			
-			stage.forEach(function(riser) {			
+			stage.forEach(function(riser) {		
 				if(!(typeof riser.moleNo === "undefined")){			
 					riserIndex = risers.indexOf(riser.moleNo);
+					//when riser reaches 100px higher than starting position, begin hide
 					if(Math.round(riser.position.y) <= Math.round((riser.startPositionY - 100)) && riser.status == 'rising'){
 						riser.body.velocity.y = 50;
 						riser.status = 'hiding'; 
-					}              
-					else if(Math.round(riser.position.y) >= Math.round((parseInt(riser.startPositionY))) && riser.status  == 'hiding'){
-						riser.moves = false;
+					}
+					else if(Math.round(riser.position.y) >= Math.round((riser.startPositionY)) && riser.status == 'hiding'){
 						riser.body.velocity.y = 0;
-						riser.position.x = riser.startPositionX;
-						riser.position.y = riser.startPositionY;
 						riser.status = 'none';
 						risers.splice(riserIndex, 1);
-
-						while(risers.length < parseInt(gameSettings.risers)){
-							this.pickChar();
-						}
-						
-					}else if(riser.status == 'none'){
-						riser.moves = false;
-						riser.body.velocity.y = 0;
-						riser.position.x = riser.startPositionX;
-						riser.position.y = riser.startPositionY;
-						riser.status = 'none';
-					}
+						this.pickChar();
+					};
 				}
-			}, this);
+			}, this);	
 			hitEffects.forEach(function(item) {	
 				if(!(typeof item === "undefined")){
 					var oldWidth = item.width;
@@ -261,19 +272,21 @@ BasicGame.Boot.prototype = {
 	},
 	winConCheck: function(){
 		if(parseInt(scoreText.text) >= parseInt(gameSettings.winWhen)){
+			gameActive = false;
 			this.onWin();
 			board.alpha = 1;
 			againButton.alpha = 1;	
 			messageText.alpha = 1;	
-			stage.forEach(function(mole) {
+			risers = [];
+			stage.forEach(function(mole) {		
 				if(!(typeof mole.moleNo === 'undefined')){
 					mole.moves = false;
-					mole.position.x = mole.startPositionX;
 					mole.position.y = mole.startPositionY;
 					mole.body.velocity.y = 0;
-					mole.status = 'none';	
+					mole.status = 'none';
+					mole.moves = true;					
 				}
-			}, this);			
+			});			
 			messageText.text = "You have won \n" + gameSettings.pointsWon + " points!";
 			grats = game.add.sprite(48,275, 'congratulations');
 
@@ -283,7 +296,7 @@ BasicGame.Boot.prototype = {
 
 	},
 	onWin: function(){
-		//Bryan do your thing
+		//Jepoy do your thing
 	}
 };
 
