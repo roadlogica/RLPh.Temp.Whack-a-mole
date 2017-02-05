@@ -1,23 +1,21 @@
-var instructions; //sprite group
-
-function Instructions(game) {
+function InstructionScreen(game) {
     this.game = game;
+	this.instructionScreenSprites;
+	this.instructionScreenBg;
+	this.playBtn;
 }
-
-Instructions.prototype.loadSprite = function() {
-	//load all sprites for leaderboard
-	//bg, buttons etc
-	this.game.load.image('splash', 'assets/splash.png');
-	instructions = this.game.add.group();
+InstructionScreen.prototype.loadSprite = function() {
+	this.game.load.image('instructionBgTexture', 'assets/screens/instructions.png');
+	this.game.load.image('playBtnTexture', 'assets/btns/play.png');
 }
-Instructions.prototype.show = function() {	 
-	//create all sprites and add to screen sprite group
-	var instructionsBg = game.add.sprite(0, 0, 'splash');
-	instructionsBg.inputEnabled = true;
-	instructionsBg.events.onInputDown.add(this.hide, this);
-	instructions.add(instructionsBg);
+InstructionScreen.prototype.show = function() {	 
+	this.instructionScreenSprites = game.add.group();
+	this.instructionScreenSprites.enableBody = true;
+	this.instructionScreenBg = this.instructionScreenSprites.create(1, 1, 'instructionBgTexture');
+	this.playBtn =  this.instructionScreenSprites.create(370, 600, 'playBtnTexture');
+	this.playBtn.inputEnabled = true;
+	this.playBtn.events.onInputDown.add(this.hide, this);
 }
-Instructions.prototype.hide = function() {
-	//destroy sprite group to destroy all sprites within the screen
-	instructions.destroy();
+InstructionScreen.prototype.hide = function() {
+	this.instructionScreenSprites.destroy();
 }
