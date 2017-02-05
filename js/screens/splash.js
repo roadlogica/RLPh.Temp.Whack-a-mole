@@ -26,4 +26,5 @@ SplashScreen.prototype.hide = function() {
 }
 SplashScreen.prototype.showInstructions = function(){
 	this.splashScreenSprites.destroy();
+	instructionsScreen.show();
 }
