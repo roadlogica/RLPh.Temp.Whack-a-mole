@@ -12,10 +12,13 @@ var pauseScreen = new PauseScreen(game);
 var instructionsScreen = new InstructionScreen(game);
 var endScreen = new EndScreen(game);
 var gameActive = false;
+var timer, timerEvent;
+var timeText;
 
 BasicGame.Boot.prototype = {
     preload: function () {
 		game.load.json('fontSettings', 'settings/fontSettings.json');
+		game.load.json('gameSettings', 'settings/gameSettings.json');
 		game.load.json('gameText', 'settings/gameText.json');		
 		game.load.image('pauseBtnTexture', 'assets/btns/pause.png');
 		
@@ -31,7 +34,8 @@ BasicGame.Boot.prototype = {
 		background.create();
 		cherub.create();
 		cursors = game.input.keyboard.createCursorKeys();
-		this.createPauseButton();		
+		this.createPauseButton();
+		this.createTimer();		
 		splashScreen.show();
     },
 	update: function(){
@@ -40,7 +44,7 @@ BasicGame.Boot.prototype = {
 		}
 	},
 	render: function(){
-
+		this.timerTick();
 	},
 	createPauseButton: function(){
 		var pauseBtn =  game.add.sprite(910, 20, 'pauseBtnTexture');
@@ -49,9 +53,34 @@ BasicGame.Boot.prototype = {
 		pauseBtn.events.onInputDown.add(this.pauseGame, this);	
 	},
 	pauseGame: function(){
+		timer.pause();
 		gameActive = false;
 		pauseScreen.show();
-	}
+	},
+	createTimer: function(){
+        timer = game.time.create();
+		var gameSettings = game.cache.getJSON('gameSettings');
+        timerEvent = timer.add(Phaser.Timer.SECOND * parseFloat(gameSettings.gamelength), this.endTimer, this);
+        timer.start();
+		var fontSettings = game.cache.getJSON('fontSettings');
+		timeText = game.add.text(10, 20, this.formatTime(Math.round((timerEvent.delay - timer.ms) / 1000)) , fontSettings.timer );				
+	},
+	timerTick: function(){
+        if (timer.running) {
+            timeText.text = this.formatTime(Math.round((timerEvent.delay - timer.ms) / 1000));
+        }
+        else {
+            timeText.text = 'game over';
+        }
+	},
+	formatTime: function(s) {
+        var minutes = "0" + Math.floor(s / 60);
+        var seconds = "0" + (s - minutes * 60);
+        return minutes.substr(-2) + ":" + seconds.substr(-2);   
+    },
+	endTimer: function() {
+        timer.stop();
+    }
 };
 
 function resetGame(){

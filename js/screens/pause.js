@@ -30,6 +30,7 @@ PauseScreen.prototype.show = function() {
 PauseScreen.prototype.hide = function() {
 	this.pauseScreenSprites.destroy();
 	gameActive = true;
+	timer.resume();
 },
 PauseScreen.prototype.reset = function(){
 	resetGame();
