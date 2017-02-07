@@ -10,6 +10,7 @@ var background = new Background(game);
 var splashScreen = new SplashScreen(game);
 var pauseScreen = new PauseScreen(game);
 var instructionsScreen = new InstructionScreen(game);
+var endScreen = new EndScreen(game);
 var gameActive = false;
 
 BasicGame.Boot.prototype = {
@@ -22,6 +23,7 @@ BasicGame.Boot.prototype = {
 		cherub.loadSprite();
 		splashScreen.loadSprite();
 		pauseScreen.loadSprite();
+		endScreen.loadSprite();
 		instructionsScreen.loadSprite();
 		
     },	
@@ -53,10 +55,6 @@ BasicGame.Boot.prototype = {
 };
 
 function resetGame(){
-	game.state.start('Boot');
-}
-
-function endGame(){
 	game.state.start('Boot');
 }
 

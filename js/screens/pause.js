@@ -35,5 +35,5 @@ PauseScreen.prototype.reset = function(){
 	resetGame();
 },
 PauseScreen.prototype.end = function(){
-	endGame();
+	endScreen.show();
 }
