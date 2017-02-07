@@ -22,9 +22,10 @@ SplashScreen.prototype.show = function() {
 	this.instructionsBtn.events.onInputDown.add(this.showInstructions, this);	
 }
 SplashScreen.prototype.hide = function() {
+	gameActive = true;
 	this.splashScreenSprites.destroy();
 }
 SplashScreen.prototype.showInstructions = function(){
-	this.splashScreenSprites.destroy();
 	instructionsScreen.show();
+	this.splashScreenSprites.destroy();
 }

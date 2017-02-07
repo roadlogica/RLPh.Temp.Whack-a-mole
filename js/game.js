@@ -13,26 +13,28 @@ var gameActive = false;
 
 BasicGame.Boot.prototype = {
     preload: function () {
+		game.load.json('fontSettings', 'settings/fontSettings.json');
+		game.load.json('gameText', 'settings/gameText.json');		
+		
 		background.loadSprite();		
 		cherub.loadSprite();
 		splashScreen.loadSprite();
 		instructionsScreen.loadSprite();
+		
     },	
     create: function () {
-		// background.create();
-		// cherub.create();
+		background.create();
+		cherub.create();
 		cursors = game.input.keyboard.createCursorKeys();
 		splashScreen.show();
     },
 	update: function(){
-		cherub.update();
-		console.log(gameActive);
+		if(gameActive == true){
+			cherub.update();
+		}
 	},
 	render: function(){
 
-	},
-	showInstructions: function(){
-		// instructionScreen.show();
 	}
 };
 
