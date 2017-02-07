@@ -1,4 +1,4 @@
 {
-	"instructions": { "font": "50px Helvetica", "fill": "#3598dc", "align" : "left", "wordWrap" : true, "wordWrapWidth" : 700},
-	"instructionTitle" : { "font": "85px Helvetica", "fill": "#155886", "align" : "center" }
+	"instructions": { "font": "50px Helvetica", "fill": "#2e8131", "align" : "left", "wordWrap" : true, "wordWrapWidth" : 700},
+	"instructionTitle" : { "font": "85px Helvetica", "fill": "#205819", "align" : "center" }
 }

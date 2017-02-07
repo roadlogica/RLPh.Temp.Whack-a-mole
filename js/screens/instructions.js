@@ -12,7 +12,7 @@ InstructionScreen.prototype.show = function() {
 	this.instructionScreenSprites = game.add.group();
 	this.instructionScreenSprites.enableBody = true;	
 	this.instructionScreenBg = this.instructionScreenSprites.create(1, 1, 'instructionBgTexture');
-	this.playBtn =  this.instructionScreenSprites.create(340, 600, 'playBtnTexture2');
+	this.playBtn =  this.instructionScreenSprites.create(420, 600, 'playBtnTexture2');
 	this.playBtn.inputEnabled = true;
 	this.playBtn.events.onInputDown.add(this.hide, this);
 	this.fontSettings = game.cache.getJSON('fontSettings');
