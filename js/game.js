@@ -70,7 +70,7 @@ BasicGame.Boot.prototype = {
             timeText.text = this.formatTime(Math.round((timerEvent.delay - timer.ms) / 1000));
         }
         else {
-            timeText.text = 'game over';
+            endScreen.show();
         }
 	},
 	formatTime: function(s) {
