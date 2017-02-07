@@ -37,6 +37,7 @@ BasicGame.Boot.prototype = {
 		this.createPauseButton();
 		this.createTimer();		
 		splashScreen.show();
+		timer.pause();
     },
 	update: function(){
 		if(gameActive == true){

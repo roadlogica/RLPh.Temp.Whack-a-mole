@@ -21,8 +21,10 @@ InstructionScreen.prototype.show = function() {
 	this.instructionText = game.add.text(150, 300, this.gameText.instructions , this.fontSettings.instructions );
 	this.instructionScreenSprites.add(this.instructionText);
 	this.instructionScreenSprites.add(this.instructionTitle);
+	timer.pause();
 }
 InstructionScreen.prototype.hide = function() {
 	this.instructionScreenSprites.destroy();
 	gameActive = true;
+	timer.resume();
 }
