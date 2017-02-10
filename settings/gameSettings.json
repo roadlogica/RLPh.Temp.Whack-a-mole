@@ -1,3 +1,4 @@
 {
-	"gamelength": 120
+	"gamelength": 30,
+	"timerOff" : true	
 }

@@ -4,6 +4,7 @@ var BasicGame = function (game) { };
 
 BasicGame.Boot = function (game) { };
 
+var gameSettings;
 var cherub = new Angel(game); 
 var cursors;
 var background = new Background(game);
@@ -21,6 +22,7 @@ BasicGame.Boot.prototype = {
 		game.load.json('gameSettings', 'settings/gameSettings.json');
 		game.load.json('gameText', 'settings/gameText.json');		
 		game.load.image('pauseBtnTexture', 'assets/btns/pause.png');
+		gameSettings = game.cache.getJSON('gameSettings');	
 		
 		background.loadSprite();		
 		cherub.loadSprite();
@@ -31,13 +33,16 @@ BasicGame.Boot.prototype = {
 		
     },	
     create: function () {
+		gameSettings = game.cache.getJSON('gameSettings');
 		background.create();
 		cherub.create();
 		cursors = game.input.keyboard.createCursorKeys();
 		this.createPauseButton();
 		this.createTimer();		
 		splashScreen.show();
-		timer.pause();
+		if(gameSettings.timerOff == false){
+			timer.pause();
+		}
     },
 	update: function(){
 		if(gameActive == true){
@@ -45,7 +50,10 @@ BasicGame.Boot.prototype = {
 		}
 	},
 	render: function(){
-		this.timerTick();
+		gameSettings = game.cache.getJSON('gameSettings');
+		if(gameSettings.timerOff == false){		
+			this.timerTick();
+		}
 	},
 	createPauseButton: function(){
 		var pauseBtn =  game.add.sprite(910, 20, 'pauseBtnTexture');
@@ -54,17 +62,22 @@ BasicGame.Boot.prototype = {
 		pauseBtn.events.onInputDown.add(this.pauseGame, this);	
 	},
 	pauseGame: function(){
-		timer.pause();
+		gameSettings = game.cache.getJSON('gameSettings');
+		if(gameSettings.timerOff == false){
+			timer.pause();
+		}
 		gameActive = false;
 		pauseScreen.show();
 	},
 	createTimer: function(){
-        timer = game.time.create();
-		var gameSettings = game.cache.getJSON('gameSettings');
-        timerEvent = timer.add(Phaser.Timer.SECOND * parseFloat(gameSettings.gamelength), this.endTimer, this);
-        timer.start();
-		var fontSettings = game.cache.getJSON('fontSettings');
-		timeText = game.add.text(10, 20, this.formatTime(Math.round((timerEvent.delay - timer.ms) / 1000)) , fontSettings.timer );				
+		gameSettings = game.cache.getJSON('gameSettings');
+		timer = game.time.create();
+		if(gameSettings.timerOff == false){
+			timerEvent = timer.add(Phaser.Timer.SECOND * parseFloat(gameSettings.gamelength), this.endTimer, this);
+			timer.start();
+			var fontSettings = game.cache.getJSON('fontSettings');			
+			timeText = game.add.text(10, 20, this.formatTime(Math.round((timerEvent.delay - timer.ms) / 1000)) , fontSettings.timer );				
+		}
 	},
 	timerTick: function(){
         if (timer.running) {
@@ -87,6 +100,7 @@ BasicGame.Boot.prototype = {
 function resetGame(){
 	game.state.start('Boot');
 }
+
 
 game.state.add('Boot', BasicGame.Boot);
 game.state.start('Boot');
