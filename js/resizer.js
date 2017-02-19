@@ -1,15 +1,11 @@
-function resizeByAspect(game,cw,ch)
+function resizeByAspect(tw,th,sprite)
 {
-	var ratioW = cw/game.width;
-	var ratioH = ch/game.height;
+	//var ratioW = game.width/cw;
+	//var ratioH = game.height/ch;
+	//alert(sprite.width + " " + sprite.height);
+	var tempWpercent = tw/sprite.width;//(cw*ratioW);
+	var tempHpercent = th/sprite.height;//(ch*ratioH);
 	
-	if (ratioW < ratioH)
-		ratioH = ratioW
-	else
-		ratioW = ratioH;
-	
-	var tempWpercent = game.width/(cw*ratioW);
-	var tempHpercent = game.height/(ch*ratioH);
 	if (tempHpercent < tempWpercent)
 		return tempHpercent;
 	else
