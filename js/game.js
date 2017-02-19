@@ -34,6 +34,34 @@ BasicGame.Boot.prototype = {
     },	
     create: function () {
 		gameSettings = game.cache.getJSON('gameSettings');
+		
+		if (this.game.device.desktop)
+        {
+            this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+            this.scale.minHeight = 480;
+            this.scale.minWidth = 270;
+            this.scale.maxWidth = 1080;
+            this.scale.maxHeight = 1920;
+            this.scale.pageAlignHorizontally = true;
+            this.scale.pageAlignVertically = true;
+            this.scale.setScreenSize(true);
+        }
+        else
+        {
+            this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+            this.scale.minHeight = 480;
+            this.scale.minWidth = 270;
+            this.scale.maxWidth = 1080;
+            this.scale.maxHeight = 1920;
+            this.scale.pageAlignHorizontally = true;
+            this.scale.pageAlignVertically = true;
+            this.scale.forceOrientation(false, true);
+            this.scale.hasResized.add(this.gameResized, this);
+            this.scale.enterIncorrectOrientation.add(this.enterIncorrectOrientation, this);
+            this.scale.leaveIncorrectOrientation.add(this.leaveIncorrectOrientation, this);
+            this.scale.setScreenSize(true);
+        }
+		
 		background.create();
 		cherub.create();
 		cursors = game.input.keyboard.createCursorKeys();
